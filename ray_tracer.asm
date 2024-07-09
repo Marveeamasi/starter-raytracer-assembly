@@ -1,22 +1,56 @@
-; Simple ray tracer (educational purposes)
+; setting up initial ray and a single sphere for testing the intersection logic
 
-; Define data segment (dummy data for now)
+; Section for data structures
 .data
-message db "Hello from ray tracer!", 10
 
-; Global section (dummy variables for now)
+; to define structure for storing sphere data x, y, z coordinates and radius
+sphere_struct:
+    .quad 4          ; 
+    .quad 0.0         ; 
+    .quad 0.0         ; 
+    .quad 0.0         ; 
+    .float 1.0        ; 
+
+scene:
+    .quad sphere_struct  ; 
+
 .globl main
 
 .text
+print_message:
+    mov    rdi, format_string  ; 
+    mov    rsi, arg1            ; 
+    xor    rdx, rdx            ; 
+    mov    rax, 1               ; 
+    int    0x80               ; 
+
+format_string:
+    .string "Message: %s\n"      ;
+arg1:
+    .asciz "testing rn.."   ;
+
 ; Main function
 main:
-    ; This line will cause the "Illegal instruction" error
-    xor eax, eax  ; Valid instruction (replace with an invalid one)
-    mov eax, 4    ; Exit code (replace with a system call if needed)
-    int 0x80     ; System call interrupt
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    mov    rax, 10              ; 
+    shl    rax, 3               ; 
+    mov    qword [rsp - 8], rax  ; 
 
-; Additional functions and logic for ray tracing can be added here (commented out for now)
+    mov    rax, 20              ; 
+    imul   rax, rax             ; 
+    mov    qword [rsp - 16], rax ; 
 
-; ... (commented out ray tracing logic)
+    addl   %eax, %esp           ; 
 
-ret
+    mov    rdi, message_to_print
+    call   print_message
+
+    ; pop stack frame and exit
+    popq %rbp
+    ret
+
+message_to_print:
+    .asciz "Ray tracing calculations complete\n"
+
